@@ -9,3 +9,5 @@ wandb/
 .DS_Store
 *.parquet
 NF.ipynb
+*.ckpt
+checkpoints/
