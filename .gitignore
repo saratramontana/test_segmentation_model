@@ -11,3 +11,6 @@ wandb/
 NF.ipynb
 *.ckpt
 checkpoints/
+PROVA.ipynb
+dati.ipynb
+main.ipynb

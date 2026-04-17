@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from data.dataset import MyDataset
 import pandas as pd
 
-df=pd.read_parquet("/Users/saratramontana/Documents/test_segmentation_model/fake_train_fold_0_seed_0.parquet")
+df=pd.read_parquet("/Users/saratramontana/Documents/test_segmentation_model/data/fake_train_fold_0_seed_0.parquet")
 
 
 train_df, temp_df = train_test_split(df, test_size=0.3, random_state=42)
