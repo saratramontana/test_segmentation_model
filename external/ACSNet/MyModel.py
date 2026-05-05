@@ -3,7 +3,7 @@ import torch.nn as nn
 from torchvision.models.resnet import resnet18
 import torch.nn.functional as F
 #from Multi_Scale_Module import PAFEM, GPM, FoldConv_aspp, HMU, SIM
-from DCN import DeformConv2d
+from deform_conv_v2 import DeformConv2d
 
 
 class CA_Module(nn.Module):
