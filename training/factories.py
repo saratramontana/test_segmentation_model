@@ -15,15 +15,16 @@ from training.lightning_modules import (
     LitOvaDiag,
 )
 
-
 def add_ovamta_stage1_label(df):
     df = df.copy()
 
-    if "ovamta_stage1_label" not in df.columns:
-        df["ovamta_stage1_label"] = df["risk_class"].map({
-            0: 1,
-            1: 2,
-        })
+    stage1_map = {
+        2: 0,  # healthy ovary
+        0: 1,  # benign mass
+        1: 2,  # malignant mass
+    }
+
+    df["ovamta_stage1_label"] = df["risk_class"].map(stage1_map)
 
     return df
 

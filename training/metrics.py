@@ -4,14 +4,8 @@ import torchmetrics
 
 
 def get_binary_cls_weights():
-    """
-    Class weights calcolati sul training set:
-        benign: 39
-        malignant: 70
-
-    formula:
-        total / (2 * count_i)
-    """
+    #formula:total / (2 * count_i)
+    
     return torch.tensor([1.397, 0.779], dtype=torch.float32)
 
 

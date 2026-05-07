@@ -483,6 +483,51 @@ class LitACSNet(L.LightningModule):
         self.log("val_seg_dice", self.val_seg_dice(seg_preds, seg_masks), prog_bar=True, on_step=False, on_epoch=True)
         self.log("val_seg_iou", self.val_seg_iou(seg_preds, seg_masks), prog_bar=True, on_step=False, on_epoch=True)
 
+        if batch_idx == 0:
+            pred_masks = seg_preds
+
+            num_images = min(3, images.shape[0])
+            val_examples = []
+
+            mean = torch.tensor([0.485, 0.456, 0.406], device=images.device).view(3, 1, 1)
+            std = torch.tensor([0.229, 0.224, 0.225], device=images.device).view(3, 1, 1)
+
+            class_labels_mask = {
+                0: "background",
+                1: "class_1",
+                2: "class_2",
+            }
+
+            for i in range(num_images):
+                image_vis = images[i].detach().cpu() * std.cpu() + mean.cpu()
+                image_vis = image_vis.clamp(0, 1)
+                image_np = image_vis.permute(1, 2, 0).numpy()
+
+                true_mask_np = seg_masks[i].detach().cpu().numpy().astype(np.uint8)
+                pred_mask_np = pred_masks[i].detach().cpu().numpy().astype(np.uint8)
+
+                val_examples.append(
+                    wandb.Image(
+                        image_np,
+                        masks={
+                            "ground_truth": {
+                                "mask_data": true_mask_np,
+                                "class_labels": class_labels_mask,
+                            },
+                            "prediction": {
+                                "mask_data": pred_mask_np,
+                                "class_labels": class_labels_mask,
+                            },
+                        },
+                        caption=f"Sample {i} | true cls={cls_labels[i].item()} | pred cls={cls_preds[i].item()}"
+                    )
+                )
+
+            self.logger.experiment.log({
+                "val_examples_acsnet": val_examples,
+                "global_step": self.global_step
+            })
+
         return loss
 
     def on_validation_epoch_end(self):
@@ -641,6 +686,57 @@ class LitOvaSeg(L.LightningModule):
         self.log("val_seg_dice", self.val_seg_dice(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
         self.log("val_seg_iou", self.val_seg_iou(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
 
+        if batch_idx == 0:
+            pred_masks = seg_preds
+            true_masks = gts_int
+
+            if pred_masks.ndim == 4:
+                pred_masks = pred_masks.squeeze(1)
+
+            if true_masks.ndim == 4:
+                true_masks = true_masks.squeeze(1)
+
+            num_images = min(3, images.shape[0])
+            val_examples = []
+
+            mean = torch.tensor([0.485, 0.456, 0.406], device=images.device).view(3, 1, 1)
+            std = torch.tensor([0.229, 0.224, 0.225], device=images.device).view(3, 1, 1)
+
+            class_labels_mask = {
+                0: "background",
+                1: "roi",
+            }
+
+            for i in range(num_images):
+                image_vis = images[i].detach().cpu() * std.cpu() + mean.cpu()
+                image_vis = image_vis.clamp(0, 1)
+                image_np = image_vis.permute(1, 2, 0).numpy()
+
+                true_mask_np = true_masks[i].detach().cpu().numpy().astype(np.uint8)
+                pred_mask_np = pred_masks[i].detach().cpu().numpy().astype(np.uint8)
+
+                val_examples.append(
+                    wandb.Image(
+                        image_np,
+                        masks={
+                            "ground_truth": {
+                                "mask_data": true_mask_np,
+                                "class_labels": class_labels_mask,
+                            },
+                            "prediction": {
+                                "mask_data": pred_mask_np,
+                                "class_labels": class_labels_mask,
+                            },
+                        },
+                        caption=f"OvaMTA-Seg debug | Sample {i} | true cls={labels[i].item()} | pred cls={cls_preds[i].item()}"
+                    )
+                )
+
+            self.logger.experiment.log({
+                "val_examples_ovamta_seg_debug": val_examples,
+                "global_step": self.global_step
+            })
+
         return loss
 
     def configure_optimizers(self):
@@ -779,6 +875,57 @@ class LitOvaDiag(L.LightningModule):
 
         self.log("val_seg_dice", self.val_seg_dice(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
         self.log("val_seg_iou", self.val_seg_iou(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
+
+        if batch_idx == 0:
+            pred_masks = seg_preds
+            true_masks = gts_int
+
+            if pred_masks.ndim == 4:
+                pred_masks = pred_masks.squeeze(1)
+
+            if true_masks.ndim == 4:
+                true_masks = true_masks.squeeze(1)
+
+            num_images = min(3, images.shape[0])
+            val_examples = []
+
+            mean = torch.tensor([0.485, 0.456, 0.406], device=images.device).view(3, 1, 1)
+            std = torch.tensor([0.229, 0.224, 0.225], device=images.device).view(3, 1, 1)
+
+            class_labels_mask = {
+                0: "background",
+                1: "mass",
+            }
+
+            for i in range(num_images):
+                image_vis = images[i].detach().cpu() * std.cpu() + mean.cpu()
+                image_vis = image_vis.clamp(0, 1)
+                image_np = image_vis.permute(1, 2, 0).numpy()
+
+                true_mask_np = true_masks[i].detach().cpu().numpy().astype(np.uint8)
+                pred_mask_np = pred_masks[i].detach().cpu().numpy().astype(np.uint8)
+
+                val_examples.append(
+                    wandb.Image(
+                        image_np,
+                        masks={
+                            "ground_truth": {
+                                "mask_data": true_mask_np,
+                                "class_labels": class_labels_mask,
+                            },
+                            "prediction": {
+                                "mask_data": pred_mask_np,
+                                "class_labels": class_labels_mask,
+                            },
+                        },
+                        caption=f"Sample {i} | true cls={labels[i].item()} | pred cls={cls_preds[i].item()}"
+                    )
+                )
+
+            self.logger.experiment.log({
+                "val_examples_ovamta_diag": val_examples,
+                "global_step": self.global_step
+            })
 
         return loss
 
