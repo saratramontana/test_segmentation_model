@@ -47,6 +47,13 @@ def _assign_binary_cls_metrics(module):
     module.val_cls_recall = val_cls_metrics["recall"]
     module.val_cls_auc = val_cls_metrics["auc"]
 
+    # test_cls_metrics = build_binary_classification_metrics()
+
+    # module.test_cls_f1 = test_cls_metrics["f1"]
+    # module.test_cls_precision = test_cls_metrics["precision"]
+    # module.test_cls_recall = test_cls_metrics["recall"]
+    # module.test_cls_auc = test_cls_metrics["auc"]
+
 
 def _assign_multiclass_seg_metrics(module):
     train_seg_metrics = build_multiclass_segmentation_metrics(num_classes=3)
@@ -58,6 +65,10 @@ def _assign_multiclass_seg_metrics(module):
     module.val_seg_dice = val_seg_metrics["dice"]
     module.val_seg_iou = val_seg_metrics["iou"]
 
+    # test_seg_metrics = build_multiclass_segmentation_metrics(num_classes=3)
+
+    # module.test_seg_dice = test_seg_metrics["dice"]
+    # module.test_seg_iou = test_seg_metrics["iou"]
 
 def _assign_binary_seg_metrics(module):
     train_seg_metrics = build_binary_segmentation_metrics()
@@ -68,6 +79,11 @@ def _assign_binary_seg_metrics(module):
 
     module.val_seg_dice = val_seg_metrics["dice"]
     module.val_seg_iou = val_seg_metrics["iou"]
+
+    # test_seg_metrics = build_binary_segmentation_metrics()
+
+    # module.test_seg_dice = test_seg_metrics["dice"]
+    # module.test_seg_iou = test_seg_metrics["iou"]
 
 
 def _assign_ovamta_stage1_cls_metrics(module):
@@ -83,6 +99,13 @@ def _assign_ovamta_stage1_cls_metrics(module):
     module.val_cls_precision = val_cls_metrics["precision"]
     module.val_cls_recall = val_cls_metrics["recall"]
     module.val_cls_auc = val_cls_metrics["auc"]
+
+    # test_cls_metrics = build_ovamta_stage1_classification_metrics()
+
+    # module.test_cls_f1 = test_cls_metrics["f1"]
+    # module.test_cls_precision = test_cls_metrics["precision"]
+    # module.test_cls_recall = test_cls_metrics["recall"]
+    # module.test_cls_auc = test_cls_metrics["auc"]
 
 
 class LitSegClsModel(L.LightningModule):
@@ -228,6 +251,47 @@ class LitSegClsModel(L.LightningModule):
             })
 
         return loss
+    
+    # def test_step(self, batch, batch_idx):
+    #     images, seg_masks, cls_labels = batch
+
+    #     seg_logits, cls_logits = self(images)
+
+    #     seg_loss = self.seg_criterion(seg_logits, seg_masks)
+    #     cls_loss = self.cls_criterion(cls_logits, cls_labels)
+    #     loss = seg_loss + cls_loss
+
+    #     seg_preds = torch.argmax(seg_logits, dim=1)
+
+    #     cls_probs = torch.softmax(cls_logits, dim=1)[:, 1]
+    #     cls_preds = torch.argmax(cls_logits, dim=1)
+    #     cls_acc = (cls_preds == cls_labels).float().mean()
+
+    #     self.test_cls_auc.update(cls_probs, cls_labels)
+    #     self.test_cls_f1.update(cls_preds, cls_labels)
+    #     self.test_cls_precision.update(cls_preds, cls_labels)
+    #     self.test_cls_recall.update(cls_preds, cls_labels)
+
+    #     self.log("test_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_loss", seg_loss, on_step=False, on_epoch=True)
+    #     self.log("test_cls_loss", cls_loss, on_step=False, on_epoch=True)
+    #     self.log("test_cls_acc", cls_acc, prog_bar=True, on_step=False, on_epoch=True)
+
+    #     self.log("test_seg_dice", self.test_seg_dice(seg_preds, seg_masks), prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_iou", self.test_seg_iou(seg_preds, seg_masks), prog_bar=True, on_step=False, on_epoch=True)
+
+    #     return loss
+
+    # def on_test_epoch_end(self):
+    #     self.log("test_cls_auc", self.test_cls_auc.compute(), prog_bar=True)
+    #     self.log("test_cls_f1", self.test_cls_f1.compute(), prog_bar=True)
+    #     self.log("test_cls_precision", self.test_cls_precision.compute())
+    #     self.log("test_cls_recall", self.test_cls_recall.compute())
+
+    #     self.test_cls_auc.reset()
+    #     self.test_cls_f1.reset()
+    #     self.test_cls_precision.reset()
+    #     self.test_cls_recall.reset()
 
     def on_validation_epoch_end(self):
         self.log("val_cls_auc", self.val_cls_auc.compute(), prog_bar=True)
@@ -529,6 +593,57 @@ class LitACSNet(L.LightningModule):
             })
 
         return loss
+    
+    # def test_step(self, batch, batch_idx):
+    #     images, seg_masks, cls_labels = batch
+
+    #     class_logits, seg_logits = self(images)
+
+    #     cls_labels = cls_labels.long()
+    #     seg_masks = seg_masks.long()
+
+    #     seg_loss, ce_seg_loss, lossnet_loss = self.compute_seg_loss(seg_logits, seg_masks)
+    #     cls_loss = self.cls_criterion(class_logits, cls_labels)
+
+    #     loss = self.awl(seg_loss, cls_loss)
+
+    #     seg_probs = torch.softmax(seg_logits, dim=1)
+    #     seg_preds = torch.argmax(seg_probs, dim=1)
+
+    #     cls_probs = torch.softmax(class_logits, dim=1)[:, 1]
+    #     cls_preds = torch.argmax(class_logits, dim=1)
+    #     cls_acc = (cls_preds == cls_labels).float().mean()
+
+    #     self.test_cls_auc.update(cls_probs, cls_labels)
+    #     self.test_cls_f1.update(cls_preds, cls_labels)
+    #     self.test_cls_precision.update(cls_preds, cls_labels)
+    #     self.test_cls_recall.update(cls_preds, cls_labels)
+
+    #     self.log("test_ce_seg_loss", ce_seg_loss, on_step=False, on_epoch=True)
+
+    #     if lossnet_loss is not None:
+    #         self.log("test_lossnet_loss", lossnet_loss, on_step=False, on_epoch=True)
+
+    #     self.log("test_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_loss", seg_loss, on_step=False, on_epoch=True)
+    #     self.log("test_cls_loss", cls_loss, on_step=False, on_epoch=True)
+    #     self.log("test_cls_acc", cls_acc, prog_bar=True, on_step=False, on_epoch=True)
+
+    #     self.log("test_seg_dice", self.test_seg_dice(seg_preds, seg_masks), prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_iou", self.test_seg_iou(seg_preds, seg_masks), prog_bar=True, on_step=False, on_epoch=True)
+
+    #     return loss
+
+    # def on_test_epoch_end(self):
+    #     self.log("test_cls_auc", self.test_cls_auc.compute(), prog_bar=True)
+    #     self.log("test_cls_f1", self.test_cls_f1.compute(), prog_bar=True)
+    #     self.log("test_cls_precision", self.test_cls_precision.compute())
+    #     self.log("test_cls_recall", self.test_cls_recall.compute())
+
+    #     self.test_cls_auc.reset()
+    #     self.test_cls_f1.reset()
+    #     self.test_cls_precision.reset()
+    #     self.test_cls_recall.reset()
 
     def on_validation_epoch_end(self):
         self.log("val_cls_auc", self.val_cls_auc.compute(), prog_bar=True)
@@ -737,6 +852,50 @@ class LitOvaSeg(L.LightningModule):
             })
 
         return loss
+    
+    # def test_step(self, batch, batch_idx):
+    #     images, gts, labels = batch
+
+    #     loss, loss1, loss2, loss3, loss4, loss5, cls_out, out5, out4, out3, out2 = self.compute_loss(
+    #         images, gts, labels
+    #     )
+
+    #     seg_loss = loss2 + loss3 + loss4 + loss5
+
+    #     seg_logits = out5 + out4 + out3 + out2
+    #     seg_preds = (seg_logits > 0).long()
+    #     gts_int = gts.long()
+
+    #     cls_preds = torch.argmax(cls_out, dim=1)
+    #     cls_acc = (cls_preds == labels).float().mean()
+
+    #     cls_probs = torch.softmax(cls_out, dim=1)
+
+    #     self.test_cls_auc.update(cls_probs, labels)
+    #     self.test_cls_f1.update(cls_preds, labels)
+    #     self.test_cls_precision.update(cls_preds, labels)
+    #     self.test_cls_recall.update(cls_preds, labels)
+
+    #     self.log("test_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_cls_loss", loss1, on_step=False, on_epoch=True)
+    #     self.log("test_seg_loss", seg_loss, on_step=False, on_epoch=True)
+
+    #     self.log("test_cls_acc", cls_acc, prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_dice", self.test_seg_dice(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_iou", self.test_seg_iou(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
+
+    #     return loss
+
+    # def on_test_epoch_end(self):
+    #     self.log("test_cls_auc", self.test_cls_auc.compute(), prog_bar=True)
+    #     self.log("test_cls_f1", self.test_cls_f1.compute(), prog_bar=True)
+    #     self.log("test_cls_precision", self.test_cls_precision.compute())
+    #     self.log("test_cls_recall", self.test_cls_recall.compute())
+
+    #     self.test_cls_auc.reset()
+    #     self.test_cls_f1.reset()
+    #     self.test_cls_precision.reset()
+    #     self.test_cls_recall.reset()
 
     def configure_optimizers(self):
         pg = [p for p in self.parameters() if p.requires_grad]
@@ -927,6 +1086,50 @@ class LitOvaDiag(L.LightningModule):
             })
 
         return loss
+    
+    # def test_step(self, batch, batch_idx):
+    #     images, gts, labels = batch
+
+    #     loss, loss1, loss2, loss3, loss4, loss5, cls_out, out5, out4, out3, out2 = self.compute_loss(
+    #         images, gts, labels
+    #     )
+
+    #     seg_loss = loss2 + loss3 + loss4 + loss5
+
+    #     seg_logits = out5 + out4 + out3 + out2
+    #     seg_preds = (seg_logits > 0).long()
+    #     gts_int = gts.long()
+
+    #     cls_preds = torch.argmax(cls_out, dim=1)
+    #     cls_acc = (cls_preds == labels).float().mean()
+
+    #     cls_probs = torch.softmax(cls_out, dim=1)[:, 1]
+
+    #     self.test_cls_auc.update(cls_probs, labels)
+    #     self.test_cls_f1.update(cls_preds, labels)
+    #     self.test_cls_precision.update(cls_preds, labels)
+    #     self.test_cls_recall.update(cls_preds, labels)
+
+    #     self.log("test_loss", loss, prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_cls_loss", loss1, on_step=False, on_epoch=True)
+    #     self.log("test_seg_loss", seg_loss, on_step=False, on_epoch=True)
+
+    #     self.log("test_cls_acc", cls_acc, prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_dice", self.test_seg_dice(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
+    #     self.log("test_seg_iou", self.test_seg_iou(seg_preds, gts_int), prog_bar=True, on_step=False, on_epoch=True)
+
+    #     return loss
+
+    # def on_test_epoch_end(self):
+    #     self.log("test_cls_auc", self.test_cls_auc.compute(), prog_bar=True)
+    #     self.log("test_cls_f1", self.test_cls_f1.compute(), prog_bar=True)
+    #     self.log("test_cls_precision", self.test_cls_precision.compute())
+    #     self.log("test_cls_recall", self.test_cls_recall.compute())
+
+    #     self.test_cls_auc.reset()
+    #     self.test_cls_f1.reset()
+    #     self.test_cls_precision.reset()
+    #     self.test_cls_recall.reset()
 
     def on_validation_epoch_end(self):
         self.log("val_cls_auc", self.val_cls_auc.compute(), prog_bar=True)

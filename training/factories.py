@@ -79,6 +79,60 @@ def build_dataloaders(model_name, train_df, val_df, batch_size):
 
     return train_loader, val_loader
 
+# def build_dataloaders(model_name, train_df, val_df, batch_size, test_df=None):
+#     if model_name == "baseline":
+#         train_dataset = BaselineDataset(train_df)
+#         val_dataset = BaselineDataset(val_df)
+#         test_dataset = BaselineDataset(test_df) if test_df is not None else None
+
+#     elif model_name == "acsnet":
+#         train_dataset = ACSNetMulticlassDataset(train_df)
+#         val_dataset = ACSNetMulticlassDataset(val_df)
+#         test_dataset = ACSNetMulticlassDataset(test_df) if test_df is not None else None
+
+#     elif model_name == "ovamta_seg":
+#         train_df = add_ovamta_stage1_label(train_df)
+#         val_df = add_ovamta_stage1_label(val_df)
+#         test_df = add_ovamta_stage1_label(test_df) if test_df is not None else None
+
+#         train_dataset = OvaSegWrapperDataset(train_df)
+#         val_dataset = OvaSegWrapperDataset(val_df)
+#         test_dataset = OvaSegWrapperDataset(test_df) if test_df is not None else None
+
+#     elif model_name == "ovamta_diag":
+#         train_dataset = OvaDiagWrapperDataset(train_df)
+#         val_dataset = OvaDiagWrapperDataset(val_df)
+#         test_dataset = OvaDiagWrapperDataset(test_df) if test_df is not None else None
+
+#     else:
+#         raise ValueError(f"Unknown model_name: {model_name}")
+
+#     train_loader = DataLoader(
+#         train_dataset,
+#         batch_size=batch_size,
+#         shuffle=True,
+#         num_workers=0,
+#     )
+
+#     val_loader = DataLoader(
+#         val_dataset,
+#         batch_size=batch_size,
+#         shuffle=False,
+#         num_workers=0,
+#     )
+
+#     if test_dataset is None:
+#         return train_loader, val_loader
+
+#     test_loader = DataLoader(
+#         test_dataset,
+#         batch_size=batch_size,
+#         shuffle=False,
+#         num_workers=0,
+#     )
+
+#     return train_loader, val_loader, test_loader
+
 
 def build_lightning_module(
     model_name,
