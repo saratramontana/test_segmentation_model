@@ -183,7 +183,7 @@ class LitSegClsModel(L.LightningModule):
         seg_loss = self.seg_criterion(seg_logits, seg_masks)
         cls_loss = self.cls_criterion(cls_logits, cls_labels)
 
-        cls_probs = torch.softmax(cls_logits, dim=1)[:, 1]
+        cls_probs = torch.softmax(cls_logits, dim=1)[:, 1] #only malignant prob since AUROC requires it
 
         seg_preds = torch.argmax(seg_logits, dim=1)
         val_seg_iou = self.val_seg_iou(seg_preds, seg_masks)
